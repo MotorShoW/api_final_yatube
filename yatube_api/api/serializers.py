@@ -1,8 +1,6 @@
+from posts.models import Comment, Post
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-
-
-from posts.models import Comment, Post
 
 
 class PostSerializer(serializers.ModelSerializer):
