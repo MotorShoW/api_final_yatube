@@ -1,9 +1,8 @@
-from rest_framework import viewsets, filters, permissions
+from rest_framework import viewsets, filters, permissions, mixins
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 
 from posts.models import Group, Post, User
-
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, GroupSerializer, PostSerializer,
                           UserSerializer, FollowSerializer)
@@ -17,7 +16,7 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
         filters.OrderingFilter
     )
     search_fields = ('title', 'description')
-    ordering_fields = ('title', id)
+    ordering_fields = ('title', 'id')
     ordering = ('title',)
 
 
@@ -70,7 +69,9 @@ class UserViewSet(viewsets.ModelViewSet):
     ordering = ('-date_joined',)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(mixins.CreateModelMixin,
+                    mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
     serializer_class = FollowSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = (
@@ -78,7 +79,7 @@ class FollowViewSet(viewsets.ModelViewSet):
         filters.OrderingFilter
     )
     search_fields = ('user__username', 'following__username')
-    ordering_fields = ('following__username', id)
+    ordering_fields = ('following__username', 'id')
     ordering = ('id',)
 
     def get_queryset(self):
